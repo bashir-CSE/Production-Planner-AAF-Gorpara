@@ -18,31 +18,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Animations */
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(16px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes rowIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
         /* Cell input */
         .cell-input {
             width: 100%;
@@ -95,7 +70,11 @@
         }
 
         /* Planning table */
-        #planningDataTable th {
+        #planningDataTable {
+            border: 1px solid #e2e8f0;
+        }
+
+        #planningDataTable thead th {
             background: #1e293b;
             color: #fff;
             font-size: 12px;
@@ -103,6 +82,9 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.03em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         #planningDataTable td {
@@ -155,11 +137,6 @@
             pointer-events: none;
         }
 
-        /* Draft restore banner */
-        .draft-banner {
-            animation: slideUp 0.3s ease-out both;
-        }
-
         /* Global Loader */
         #globalLoader {
             position: fixed;
@@ -179,6 +156,18 @@
             visibility: hidden;
             pointer-events: none;
         }
+
+        /* Footer */
+        .app-footer {
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            padding: 16px 0 8px;
+        }
+
+        .app-footer strong {
+            color: #64748b;
+        }
     </style>
 </head>
 
@@ -193,29 +182,6 @@
             </div>
         </div>
         <p class="mt-4 text-slate-600 font-bold text-sm tracking-widest uppercase">Processing...</p>
-        <p class="text-slate-400 text-xs mt-1">Communicating with AAF Servers</p>
-    </div>
-
-    <!-- DRAFT RESTORE BANNER (hidden by default) -->
-    <div id="draftBanner" class="hidden fixed top-0 left-0 right-0 z-50 draft-banner">
-        <div class="bg-amber-50 border-b border-amber-200 px-4 py-3">
-            <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 flex-wrap">
-                <div class="flex items-center gap-2 text-sm text-amber-800">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    <span class="font-medium">We found an unsaved draft. Would you like to restore it?</span>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="restoreDraft()"
-                        class="bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs py-1.5 px-4 rounded-lg transition-colors">
-                        <i class="fa-solid fa-rotate-left mr-1"></i> Restore
-                    </button>
-                    <button onclick="discardDraft()"
-                        class="bg-white hover:bg-amber-100 text-amber-700 font-semibold text-xs py-1.5 px-4 rounded-lg border border-amber-300 transition-colors">
-                        Discard
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -301,7 +267,7 @@
             <!-- GRAND TOTALS -->
             <div id="grandTotalsSection" class="mt-8 bg-slate-50 border border-slate-200 rounded-2xl p-6">
                 <h3 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-widest flex items-center gap-2">
-                    <i class="fa-solid fa-sigma text-slate-400"></i> Grand Totals
+                    <i class="fa-solid fa-calculator text-slate-400"></i> Grand Totals
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
@@ -331,7 +297,7 @@
             <!-- NOTES / REMARKS -->
             <div class="mt-6">
                 <label for="remarks" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                    <i class="fa-solid fa-sticky-note text-slate-400 mr-1"></i> Notes / Special Instructions
+                    <i class="fa-solid fa-note-sticky text-slate-400 mr-1"></i> Notes / Special Instructions
                 </label>
                 <textarea id="remarks" rows="3"
                     class="w-full max-w-2xl px-3 py-2.5 rounded-lg text-sm text-slate-700 bg-slate-50 border border-slate-200 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition resize-none"
@@ -354,10 +320,15 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="max-w-7xl mx-auto mt-6 text-center text-xs text-slate-400 space-y-1 pb-4">
-        <p>v4 · Designed and developed by <span class="font-medium text-slate-500">Md Bashir Ahmed</span>, MIS-AAF
-            Gorpara</p>
-        <p>© 2026 Ayesha Abed Foundation. All rights reserved.</p>
+    <footer class="app-footer max-w-7xl mx-auto">
+        <div class="mb-2">
+            Designed and Developed by <strong>Md Bashir Ahmed</strong>, MIS, AAF Gorpara
+            <a href="https://www.linkedin.com/in/bashir-6923131b0/" target="_blank" title="LinkedIn Profile"
+                class="ml-1" style="color: #0077b5; text-decoration: none;">
+                <i class="fab fa-linkedin fa-lg"></i>
+            </a>
+        </div>
+        <div>© <span id="footerYear"></span> Ayesha Abed Foundation — Gorpara, Manikganj. All rights reserved.</div>
     </footer>
 
     <!-- FLOATING GRAND TOTAL BAR -->
@@ -407,11 +378,11 @@
                         class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                     <input type="text" id="planningSearchInput" oninput="filterPlanningTable()"
                         class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition"
-                        placeholder="Search by date or order no...">
+                        placeholder="Search by date, order no, or notes...">
                 </div>
             </div>
             <!-- Body -->
-            <div class="overflow-auto flex-1 p-4">
+            <div class="overflow-auto flex-1 px-4">
                 <div id="planningLoading" class="text-center py-12 text-slate-400">
                     <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-slate-400"></i>
                     <p class="text-sm font-medium">Loading records...</p>
@@ -424,11 +395,12 @@
                     <table id="planningDataTable" class="w-full border-collapse rounded-lg overflow-hidden">
                         <thead>
                             <tr>
-                                <th class="text-left rounded-tl-lg" style="width:40px">#</th>
-                                <th class="text-left">Planning Date</th>
-                                <th class="text-left">Order No</th>
-                                <th class="text-center">Done</th>
-                                <th class="text-center rounded-tr-lg">PDF Link</th>
+                                <th class="text-left rounded-tl-lg" style="width:5%">#</th>
+                                <th class="text-left" style="width:18%">Date</th>
+                                <th class="text-left" style="width:18%">Order No</th>
+                                <th class="text-center" style="width:12%">Status</th>
+                                <th class="text-left" style="width:37%">Notes</th>
+                                <th class="text-center rounded-tr-lg" style="width:10%">PDF</th>
                             </tr>
                         </thead>
                         <tbody id="planningTableBody"></tbody>
@@ -525,21 +497,17 @@
     <datalist id="processList"></datalist>
 
     <script>
-        const DRAFT_KEY = 'ppsDraft';
         let tableCount = 0;
         let settingsData = { items: [], processes: [] };
         let allPlanningRecords = [];
-        let autoSaveTimer = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('footerYear').textContent = new Date().getFullYear();
             resetForm();
             loadSettings();
-            document.getElementById('tablesContainer').addEventListener('input', () => { calculateAll(); scheduleDraftSave(); });
-            document.getElementById('overheadCost').addEventListener('input', () => { calculateAll(); scheduleDraftSave(); });
-            document.getElementById('orderNo').addEventListener('input', scheduleDraftSave);
-            document.getElementById('remarks').addEventListener('input', scheduleDraftSave);
+            document.getElementById('tablesContainer').addEventListener('input', calculateAll);
+            document.getElementById('overheadCost').addEventListener('input', calculateAll);
             initFloatingBar();
-            checkForDraft();
         });
 
         // ══════════════════════════════════════
@@ -552,99 +520,6 @@
             } else {
                 loader.classList.add('hidden');
             }
-        }
-
-        // ══════════════════════════════════════
-        // LOCALSTORAGE AUTO-SAVE
-        // ══════════════════════════════════════
-        function scheduleDraftSave() {
-            clearTimeout(autoSaveTimer);
-            autoSaveTimer = setTimeout(saveDraft, 2000);
-        }
-
-        function saveDraft() {
-            try {
-                const draft = {
-                    orderNo: document.getElementById('orderNo').value,
-                    overheadCost: document.getElementById('overheadCost').value,
-                    remarks: document.getElementById('remarks').value,
-                    tables: [],
-                    savedAt: new Date().toISOString()
-                };
-                document.querySelectorAll('[id^="table-wrapper-"]').forEach(w => {
-                    const itemName = w.querySelector('input[placeholder="Enter Item Name"]').value;
-                    const rows = [];
-                    w.querySelectorAll('tbody tr').forEach(r => {
-                        rows.push({
-                            processName: r.querySelector('input[name="processName"]').value,
-                            actualCost: r.querySelector('input[name="actualCost"]').value,
-                            payableWages: r.querySelector('input[name="payableWages"]').value
-                        });
-                    });
-                    draft.tables.push({ itemName, rows });
-                });
-                localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-            } catch (e) { /* localStorage might be full or unavailable */ }
-        }
-
-        function checkForDraft() {
-            try {
-                const raw = localStorage.getItem(DRAFT_KEY);
-                if (raw) {
-                    const draft = JSON.parse(raw);
-                    // Only show banner if there is meaningful data
-                    if (draft.orderNo || draft.remarks || (draft.tables && draft.tables.some(t => t.itemName || t.rows.some(r => r.processName || r.actualCost || r.payableWages)))) {
-                        document.getElementById('draftBanner').classList.remove('hidden');
-                    }
-                }
-            } catch (e) { /* ignore */ }
-        }
-
-        function restoreDraft() {
-            try {
-                const draft = JSON.parse(localStorage.getItem(DRAFT_KEY));
-                if (!draft) return;
-                document.getElementById('orderNo').value = draft.orderNo || '';
-                document.getElementById('overheadCost').value = draft.overheadCost || '';
-                document.getElementById('remarks').value = draft.remarks || '';
-
-                // Rebuild tables
-                document.getElementById('tablesContainer').innerHTML = '';
-                tableCount = 0;
-                if (draft.tables && draft.tables.length > 0) {
-                    draft.tables.forEach(t => {
-                        addNewTable();
-                        const wrapper = document.getElementById(`table-wrapper-${tableCount}`);
-                        wrapper.querySelector('input[placeholder="Enter Item Name"]').value = t.itemName || '';
-                        const tbody = wrapper.querySelector('tbody');
-                        tbody.innerHTML = '';
-                        if (t.rows && t.rows.length > 0) {
-                            t.rows.forEach((r, idx) => {
-                                appendNewRow(tbody, idx === 0 && tableCount === 1);
-                                const lastRow = tbody.lastElementChild;
-                                lastRow.querySelector('input[name="processName"]').value = r.processName || '';
-                                lastRow.querySelector('input[name="actualCost"]').value = r.actualCost || '';
-                                lastRow.querySelector('input[name="payableWages"]').value = r.payableWages || '';
-                            });
-                        } else {
-                            appendNewRow(tbody, tableCount === 1);
-                        }
-                    });
-                } else {
-                    addNewTable();
-                }
-                calculateAll();
-            } catch (e) { /* ignore */ }
-            document.getElementById('draftBanner').classList.add('hidden');
-        }
-
-        function discardDraft() {
-            localStorage.removeItem(DRAFT_KEY);
-            document.getElementById('draftBanner').classList.add('hidden');
-        }
-
-        function clearDraft() {
-            localStorage.removeItem(DRAFT_KEY);
         }
 
         // ══════════════════════════════════════
@@ -715,12 +590,49 @@
                 populateDatalist('processList', data.processes);
                 toggleLoader(false);
             }).getSettingsData();
+
+            // Fetch server date for accurate planning date
+            google.script.run.withSuccessHandler((dateStr) => {
+                document.getElementById('planningDate').value = dateStr;
+            }).getServerDate();
         }
 
         function populateDatalist(id, options) {
             const dl = document.getElementById(id);
             dl.innerHTML = '';
             options.forEach(opt => { const o = document.createElement('option'); o.value = opt; dl.appendChild(o); });
+        }
+
+        // ══════════════════════════════════════
+        // UPDATE STATUS FROM FRONTEND
+        // ══════════════════════════════════════
+        function updateSheetStatus(orderNo, newStatus) {
+            let oldStatus = '';
+            allPlanningRecords.forEach(r => {
+                if (String(r[1]) === String(orderNo)) {
+                    oldStatus = r[2];
+                    r[2] = newStatus;
+                }
+            });
+
+            google.script.run
+                .withSuccessHandler((r) => {
+                    if (!r.success) {
+                        allPlanningRecords.forEach(rec => {
+                            if (String(rec[1]) === String(orderNo)) rec[2] = oldStatus;
+                        });
+                        buildPlanningRows(allPlanningRecords);
+                        showCustomAlert("Error", r.message || "Failed to update status.", false);
+                    }
+                })
+                .withFailureHandler((e) => {
+                    allPlanningRecords.forEach(rec => {
+                        if (String(rec[1]) === String(orderNo)) rec[2] = oldStatus;
+                    });
+                    buildPlanningRows(allPlanningRecords);
+                    showCustomAlert("Error", "Failed to update: " + e, false);
+                })
+                .updateSheetStatus(orderNo, newStatus);
         }
 
         // ══════════════════════════════════════
@@ -739,12 +651,10 @@
             google.script.run
                 .withSuccessHandler((r) => {
                     renderPlanningData(r);
-                    toggleLoader(false);
                 })
                 .withFailureHandler(() => {
                     document.getElementById('planningLoading').classList.add('hidden');
                     document.getElementById('planningErrorMsg').classList.remove('hidden');
-                    toggleLoader(false);
                 })
                 .getPlanningSheets();
         }
@@ -771,18 +681,23 @@
             document.getElementById('noRecordsMsg').classList.add('hidden');
             records.forEach((row, i) => {
                 const tr = document.createElement('tr');
-                const isDone = row[2] === true || row[2] === 'TRUE';
+                const status = row[2] || 'Pending';
+                const isComplete = status === 'Complete';
+                const notesEscaped = (row[3] || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
                 tr.innerHTML = `
                     <td class="text-slate-400 font-mono text-xs">${i + 1}</td>
                     <td class="font-medium text-slate-700">${row[0] || '-'}</td>
-                    <td><span class="inline-block bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-1 rounded-full">${row[1] || '-'}</span></td>
+                    <td class="text-slate-700">${row[1] || '-'}</td>
                     <td class="text-center">
-                        <span class="inline-flex items-center justify-center w-5 h-5 rounded border-2 ${isDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300'}">
-                            ${isDone ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
-                        </span>
+                        <select onchange="updateSheetStatus('${row[1]}', this.value)"
+                            class="text-xs font-semibold px-2 py-1 rounded-lg border cursor-pointer ${isComplete ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-amber-50 border-amber-200 text-amber-700'}">
+                            <option value="Pending" ${!isComplete ? 'selected' : ''}>Pending</option>
+                            <option value="Complete" ${isComplete ? 'selected' : ''}>Complete</option>
+                        </select>
                     </td>
+                    <td class="text-slate-500 text-xs truncate max-w-[220px]" title="${notesEscaped}">${row[3] || '—'}</td>
                     <td class="text-center">
-                        ${row[3] ? `<a href="${row[3]}" target="_blank"
+                        ${row[4] ? `<a href="${row[4]}" target="_blank"
                             class="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-medium text-xs bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
                             <i class="fa-solid fa-file-pdf"></i> View
                         </a>` : '<span class="text-slate-300 text-xs">—</span>'}
@@ -795,7 +710,10 @@
             const q = document.getElementById('planningSearchInput').value.toLowerCase().trim();
             if (!q) { buildPlanningRows(allPlanningRecords); return; }
             buildPlanningRows(allPlanningRecords.filter(r =>
-                String(r[0] || '').toLowerCase().includes(q) || String(r[1] || '').toLowerCase().includes(q)
+                String(r[0] || '').toLowerCase().includes(q) ||
+                String(r[1] || '').toLowerCase().includes(q) ||
+                String(r[3] || '').toLowerCase().includes(q) ||
+                String(r[2] || '').toLowerCase().includes(q)
             ));
         }
 
@@ -814,7 +732,6 @@
             c.classList.remove('scale-100', 'opacity-100');
             c.classList.add('scale-95', 'opacity-0');
             setTimeout(() => m.classList.add('hidden'), 300);
-            // Hide PDF link when closing alert
             if (id === 'alertModal') {
                 document.getElementById('alertPdfLink').classList.add('hidden');
             }
@@ -828,7 +745,6 @@
             if (ok) { ic.className = "mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-emerald-100 mb-4"; i.className = "fa-solid fa-check text-2xl text-emerald-600"; }
             else { ic.className = "mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-red-100 mb-4"; i.className = "fa-solid fa-xmark text-2xl text-red-600"; }
 
-            // PDF link
             const pdfSection = document.getElementById('alertPdfLink');
             if (pdfUrl) {
                 document.getElementById('alertPdfBtn').href = pdfUrl;
@@ -846,12 +762,10 @@
         function openSubmitModal() {
             if (!validateForm()) return;
 
-            // Warn if grand total is 0
             const tw = parseFloat(document.getElementById('grandTotalSectionPaidWages').value) || 0;
             const ta = parseFloat(document.getElementById('grandTotalActualCosting').value) || 0;
             if (tw === 0 && ta === 0) {
                 showCustomAlert("Warning", "Grand Total is 0. Did you forget to fill in the tables? You can still submit.", false);
-                // After dismissing, allow re-submit
             }
 
             document.getElementById('confirmTitle').innerText = "Confirm Submission";
@@ -869,7 +783,7 @@
             const b = document.getElementById('confirmYesBtn');
             b.innerText = "Yes, Reset";
             b.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-colors";
-            b.onclick = () => { resetForm(); clearDraft(); closeModal('confirmationModal'); };
+            b.onclick = () => { resetForm(); closeModal('confirmationModal'); };
             openModalById('confirmationModal');
         }
 
@@ -891,7 +805,6 @@
                     if (r.success) {
                         showCustomAlert("Success!", "Production Plan submitted & PDF saved.", true, r.url);
                         resetForm();
-                        clearDraft();
                     } else {
                         showCustomAlert("Error!", r.message, false);
                     }
@@ -920,13 +833,17 @@
             document.querySelectorAll('tbody tr').forEach(r => {
                 const w = r.querySelector('input[name="payableWages"]');
                 const o = r.querySelector('input[name="overheadCosting"]');
-                if (w && o) { const v = (parseFloat(w.value) || 0) * op; o.value = v.toFixed(2); to += v; }
+                if (w && o) {
+                    const rowWages = parseFloat(w.value) || 0;
+                    const rowOverhead = rowWages * op;
+                    o.value = rowOverhead.toFixed(2);
+                    to += rowOverhead;
+                }
             });
             document.getElementById('grandTotalActualCosting').value = ta.toFixed(2);
             document.getElementById('grandTotalSectionPaidWages').value = tw.toFixed(2);
             document.getElementById('grandTotalOverheadCosting').value = to.toFixed(2);
 
-            // Update floating bar
             updateFloatingBar(tw, ta, to);
         }
 
@@ -991,7 +908,7 @@
                         <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Item Name</label>
                         <input type="text" list="itemList"
                             class="w-full max-w-sm px-3 py-2.5 rounded-lg text-sm font-medium text-slate-800 bg-slate-50 border border-slate-200 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition"
-                            placeholder="Enter Item Name" oninput="scheduleDraftSave()">
+                            placeholder="Enter Item Name">
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse text-sm">
@@ -1031,7 +948,7 @@
             if (tbody.children.length > 1) {
                 row.style.transition = 'opacity 0.2s, transform 0.2s';
                 row.style.opacity = '0'; row.style.transform = 'translateX(10px)';
-                setTimeout(() => { row.remove(); calculateAll(); scheduleDraftSave(); }, 200);
+                setTimeout(() => { row.remove(); calculateAll(); }, 200);
             } else { showCustomAlert("Cannot Delete", "Cannot delete the last row.", false); }
         }
 
@@ -1045,7 +962,7 @@
                 const w = document.getElementById(id);
                 w.style.transition = 'opacity 0.25s, transform 0.25s';
                 w.style.opacity = '0'; w.style.transform = 'scale(0.97)';
-                setTimeout(() => { w.remove(); calculateAll(); scheduleDraftSave(); }, 250);
+                setTimeout(() => { w.remove(); calculateAll(); }, 250);
                 closeModal('confirmationModal');
             };
             openModalById('confirmationModal');
@@ -1065,6 +982,10 @@
             clearOrderError();
             updateFloatingBar(0, 0, 0);
             addNewTable();
+            // Re-fetch accurate server date
+            google.script.run.withSuccessHandler((dateStr) => {
+                document.getElementById('planningDate').value = dateStr;
+            }).getServerDate();
         }
 
         document.getElementById('planningModal').addEventListener('click', function (e) {
