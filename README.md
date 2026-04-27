@@ -1,35 +1,68 @@
 # Production Planner - Ayesha Abed Foundation (Gorpara)
 
-A web-based production planning and costing application built with Google Apps Script, Tailwind CSS, and Google Drive integration. This tool allows the Ayesha Abed Foundation (AAF) Gorpara branch to generate, archive, and manage official production plans.
+A sophisticated, web-based production planning and costing application tailored for the Ayesha Abed Foundation (AAF) Gorpara branch. Built on Google Apps Script, it integrates seamlessly with Google Sheets and Google Drive to automate the lifecycle of production planning.
 
-## 🚀 Features
+## 🚀 Key Features
 
--   **Dynamic Form Generation:** Add multiple items and processes dynamically to build comprehensive plans.
--   **Automated Costing Calculations:**
-    -   Real-time calculation of Total Actual Costing and Section Paid Wages.
-    -   Automated Overhead Costing distribution based on user-defined overhead input.
-    -   Grand total summaries and percentage tracking.
--   **PDF Generation:** Automatically generates a professional PDF planning sheet with official branding.
--   **Data Archiving:**
-    -   Saves records to a "History Sheets" Google Sheet.
-    -   Stores generated PDFs in a dedicated Google Drive folder.
-    -   Duplicate Order Number prevention.
--   **History Management:**
-    -   View previously submitted planning sheets.
-    -   Search through records by Date, Order No, or Notes.
-    -   Update the status of orders (Pending/Complete) directly from the dashboard.
--   **Smart Autocomplete:** Fetches Item and Process names from a `settings` sheet for faster data entry.
+-   **Dynamic Item Management:** Add multiple items per order, each with its own set of production processes.
+-   **Automated Costing Engine:**
+    -   **Real-time Totals:** Instant calculation of "Actual Production Costing" and "Section Payable Wages".
+    -   **Intelligent Overhead Distribution:** Automatically distributes a user-defined overhead cost across all processes based on the payable wages ratio.
+    -   **Grand Summary:** Displays a comprehensive financial breakdown including overhead percentages and grand totals.
+-   **Professional PDF Generation:**
+    -   Creates system-generated, branded PDF planning sheets.
+    -   Includes formatted tables, meta-data, and summary sections.
+    -   Automatically archives PDFs to a specific Google Drive folder.
+-   **Centralized History & Tracking:**
+    -   **Archive:** Every submission is logged into a "History Sheets" Google Sheet.
+    -   **Status Management:** Track orders through "Pending" and "Complete" statuses directly from the web interface.
+    -   **Search & Filter:** Quickly locate past plans by Order No, Date, or Notes using a real-time search interface.
+-   **Data Consistency:**
+    -   Prevents duplicate Order Numbers.
+    -   Uses autocomplete for Item and Process names fetched from a central "settings" sheet.
+    -   Synchronized server-side date handling.
 
 ## 🛠️ Technical Stack
 
 -   **Backend:** Google Apps Script (`Code.gs`)
--   **Frontend:** HTML5, CSS3, JavaScript (`index.html`)
--   **UI Framework:** Tailwind CSS
--   **Icons:** Font Awesome 6.4.0
--   **Storage:** Google Sheets (Database) & Google Drive (File Storage)
+-   **Frontend:** HTML5, JavaScript (ES6+), Tailwind CSS for modern styling.
+-   **Icons & Typography:** Font Awesome 6.4, Google Fonts (Inter).
+-   **Database:** Google Sheets (Relational structure via multiple sheets).
+-   **Storage:** Google Drive API for PDF management.
 
+## 📁 Project Structure
 
-## 📄 License
+-   `Code.gs`: Server-side logic handling Spreadsheet operations, PDF generation, and HTML rendering.
+-   `index.html`: Modern, responsive single-page application (SPA) frontend.
+-   `README.md`: Project documentation.
+
+## 📋 Configuration & Deployment
+
+### 1. Spreadsheet Setup
+Your Google Sheet must have the following:
+-   **`settings` sheet**:
+    -   Column A: Item names.
+    -   Column B: Process names.
+-   **`History Sheets` sheet**: (Auto-created if not present)
+    -   Columns: `Planning Date`, `Order No`, `Planning Sheet Link`, `Status`, `Notes`.
+
+### 2. Script Configuration
+Update the IDs at the top of `Code.gs`:
+```javascript
+const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'; 
+const DRIVE_FOLDER_ID = 'YOUR_DRIVE_FOLDER_ID'; 
+```
+
+### 3. Deployment Steps
+1.  Open [Google Apps Script](https://script.google.com/).
+2.  Create a new project and paste the `Code.gs` and `index.html` contents.
+3.  Click **Deploy** > **New Deployment**.
+4.  Select **Web App**, set access permissions, and deploy.
+
+## 📄 License & Credits
 
 © 2026 Ayesha Abed Foundation — Gorpara, Manikganj.
-Designed and Developed by **Md Bashir Ahmed**, MIS, AAF Gorpara.
+
+**Designed and Developed by:**
+**Md Bashir Ahmed**, MIS, AAF Gorpara.
+[LinkedIn Profile](https://www.linkedin.com/in/bashir-6923131b0/)
