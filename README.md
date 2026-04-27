@@ -36,29 +36,6 @@ A sophisticated, web-based production planning and costing application tailored 
 -   `index.html`: Modern, responsive single-page application (SPA) frontend.
 -   `README.md`: Project documentation.
 
-## 📋 Configuration & Deployment
-
-### 1. Spreadsheet Setup
-Your Google Sheet must have the following:
--   **`settings` sheet**:
-    -   Column A: Item names.
-    -   Column B: Process names.
--   **`History Sheets` sheet**: (Auto-created if not present)
-    -   Columns: `Planning Date`, `Order No`, `Planning Sheet Link`, `Status`, `Notes`.
-
-### 2. Script Configuration
-Update the IDs at the top of `Code.gs`:
-```javascript
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'; 
-const DRIVE_FOLDER_ID = 'YOUR_DRIVE_FOLDER_ID'; 
-```
-
-### 3. Deployment Steps
-1.  Open [Google Apps Script](https://script.google.com/).
-2.  Create a new project and paste the `Code.gs` and `index.html` contents.
-3.  Click **Deploy** > **New Deployment**.
-4.  Select **Web App**, set access permissions, and deploy.
-
 ## 📄 License & Credits
 
 © 2026 Ayesha Abed Foundation — Gorpara, Manikganj.
