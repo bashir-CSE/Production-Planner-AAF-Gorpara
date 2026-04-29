@@ -379,11 +379,19 @@
         function handleStatusChange(selectEl, orderNo) {
             const newVal = selectEl.value;
             const oldVal = newVal === 'Complete' ? 'Pending' : 'Complete';
-            const td = selectEl.closest('td');
+            const card = selectEl.closest('.record-card');
+            const badge = card ? card.querySelector('.rounded-pill') : null;
 
+            // Instant UI update
             selectEl.className = statusSelectClass(newVal);
-            td.classList.add('status-flash');
-            setTimeout(() => td.classList.remove('status-flash'), 500);
+            if (badge) {
+                badge.className = statusBadgeClass(newVal) + ' px-2 py-1 rounded-pill small fw-semibold';
+                badge.textContent = newVal;
+            }
+            if (card) {
+                card.classList.add('status-flash');
+                setTimeout(() => card.classList.remove('status-flash'), 500);
+            }
 
             google.script.run
                 .withSuccessHandler((r) => {
@@ -392,18 +400,31 @@
                             if (String(rec[1]) === String(orderNo)) rec[2] = newVal;
                         });
                     } else {
+                        // Revert on failure
                         selectEl.value = oldVal;
                         selectEl.className = statusSelectClass(oldVal);
-                        td.classList.add('status-error');
-                        setTimeout(() => td.classList.remove('status-error'), 500);
+                        if (badge) {
+                            badge.className = statusBadgeClass(oldVal) + ' px-2 py-1 rounded-pill small fw-semibold';
+                            badge.textContent = oldVal;
+                        }
+                        if (card) {
+                            card.classList.add('status-error');
+                            setTimeout(() => card.classList.remove('status-error'), 500);
+                        }
                         showCustomAlert("Error", r.message || "Failed to update status.", false);
                     }
                 })
                 .withFailureHandler((e) => {
                     selectEl.value = oldVal;
                     selectEl.className = statusSelectClass(oldVal);
-                    td.classList.add('status-error');
-                    setTimeout(() => td.classList.remove('status-error'), 500);
+                    if (badge) {
+                        badge.className = statusBadgeClass(oldVal) + ' px-2 py-1 rounded-pill small fw-semibold';
+                        badge.textContent = oldVal;
+                    }
+                    if (card) {
+                        card.classList.add('status-error');
+                        setTimeout(() => card.classList.remove('status-error'), 500);
+                    }
                     showCustomAlert("Error", "Failed to update: " + e, false);
                 })
                 .updateSheetStatus(orderNo, newVal);
@@ -579,21 +600,19 @@
             b.className = 'btn btn-danger px-4 fw-semibold';
             b.onclick = () => {
                 closeModal('confirmationModal');
-                toggleLoader(true);
+
+                // Instant UI removal (optimistic)
+                allPlanningRecords = allPlanningRecords.filter(rec => String(rec[1]) !== String(orderNo));
+                applyFilters();
+
+                // Background backend deletion — no loader
                 google.script.run
                     .withSuccessHandler((r) => {
-                        toggleLoader(false);
-                        if (r.success) {
-                            // Remove from local array
-                            allPlanningRecords = allPlanningRecords.filter(rec => String(rec[1]) !== String(orderNo));
-                            applyFilters();
-                            showCustomAlert('Deleted', r.message, true);
-                        } else {
+                        if (!r.success) {
                             showCustomAlert('Error', r.message, false);
                         }
                     })
                     .withFailureHandler((e) => {
-                        toggleLoader(false);
                         showCustomAlert('Error', 'Delete failed: ' + e, false);
                     })
                     .deleteRecord(orderNo);
